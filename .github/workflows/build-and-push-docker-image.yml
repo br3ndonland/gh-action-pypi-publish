@@ -1,0 +1,29 @@
+---
+
+name: 🏗️
+
+on:   # yamllint disable-line rule:truthy
+  pull_request:
+  push:
+    branches: ["release/*", "unstable/*"]
+    tags: ["*"]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build Docker image
+      run: |
+        IMAGE="ghcr.io/$GITHUB_REPOSITORY:${GITHUB_REF_NAME/'/'/'-'}"
+        echo "IMAGE=$IMAGE" >>"$GITHUB_ENV"
+        docker build . \
+          --build-arg BUILDKIT_INLINE_CACHE=1 \
+          --cache-from $IMAGE \
+          --tag $IMAGE
+    - name: Push Docker image to GHCR
+      if: github.event_name != 'pull_request' || github.ref_type == 'tag'
+      run: |
+        echo ${{ secrets.GITHUB_TOKEN }} |
+          docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+        docker push $IMAGE

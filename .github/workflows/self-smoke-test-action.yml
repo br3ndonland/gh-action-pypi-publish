@@ -3,8 +3,10 @@
 name: 🧪
 
 on:   # yamllint disable-line rule:truthy
-  push:
   pull_request:
+  workflow_run:
+    workflows: [🏗️]
+    types: [completed]
 
 env:
   devpi-password: abcd1234
@@ -28,6 +30,9 @@ env:
 
 jobs:
   smoke-test:
+    if: >-
+      github.event_name == 'pull_request' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
 
     services:
@@ -42,13 +47,11 @@ jobs:
 
     steps:
     - name: Check out the action locally
-      uses: actions/checkout@v3
-      with:
-        path: test
+      uses: actions/checkout@v4
     - name: Install the packaging-related tools
       run: python3 -m pip install build twine
       env:
-        PIP_CONSTRAINT: test/requirements/runtime.txt
+        PIP_CONSTRAINT: requirements/runtime.txt
     - name: Create the stub package importable directory
       run: mkdir -pv src/test_package
     - name: Populate the stub package `__init__.py`
@@ -83,7 +86,7 @@ jobs:
             env.devpi-username
           }}/public/
     - name: ✅ Smoke-test the locally checked out action
-      uses: ./test
+      uses: ./
       env:
         DEBUG: >-
           true
