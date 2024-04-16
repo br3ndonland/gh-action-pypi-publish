@@ -1,0 +1,32 @@
+---
+name: 🏃
+inputs:
+  user:
+    required: false
+  password:
+    required: false
+  repository-url:
+    required: false
+  packages-dir:
+    required: false
+  verify-metadata:
+    required: false
+  skip-existing:
+    required: false
+  verbose:
+    required: false
+  print-hash:
+    required: false
+runs:
+  using: docker
+  image: {{image}}
+  args:
+  - ${{ inputs.user }}
+  - ${{ inputs.password }}
+  - ${{ inputs.repository-url }}
+  - ${{ inputs.packages-dir }}
+  - ${{ inputs.verify-metadata }}
+  - ${{ inputs.skip-existing }}
+  - ${{ inputs.verbose }}
+  - ${{ inputs.print-hash }}
+  - ${{ inputs.attestations }}

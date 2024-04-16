@@ -3,8 +3,10 @@
 name: 🧪
 
 on:   # yamllint disable-line rule:truthy
-  push:
   pull_request:
+  workflow_run:
+    workflows: [🏗️]
+    types: [completed]
 
 env:
   devpi-password: abcd1234
@@ -28,6 +30,9 @@ env:
 
 jobs:
   smoke-test:
+    if: >-
+      github.event_name == 'pull_request' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
 
     services:
