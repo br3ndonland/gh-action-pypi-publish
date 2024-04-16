@@ -84,14 +84,55 @@ branding:
   color: yellow
   icon: upload-cloud
 runs:
-  using: docker
-  image: Dockerfile
-  args:
-  - ${{ inputs.user }}
-  - ${{ inputs.password }}
-  - ${{ inputs.repository-url }}
-  - ${{ inputs.packages-dir }}
-  - ${{ inputs.verify-metadata }}
-  - ${{ inputs.skip-existing }}
-  - ${{ inputs.verbose }}
-  - ${{ inputs.print-hash }}
+  using: composite
+  steps:
+  - name: Reset path if needed
+    run: |
+      # Reset path if needed
+      # https://github.com/pypa/gh-action-pypi-publish/issues/112
+      if [[ $PATH != *"/usr/bin"* ]]; then
+        echo "\$PATH=$PATH. Resetting \$PATH for GitHub Actions."
+        PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        echo "PATH=$PATH" >>"$GITHUB_ENV"
+        echo "$PATH" >>"$GITHUB_PATH"
+        echo "\$PATH reset. \$PATH=$PATH"
+      fi
+    shell: bash
+  - name: Set repo and ref from which to run Docker container action
+    id: set-repo-and-ref
+    run: |
+      # Set repo and ref from which to run Docker container action
+      # to handle cases in which `github.action_` context is not set
+      # https://github.com/actions/runner/issues/2473
+      REF=${{ env.ACTION_REF || github.ref_name }}
+      REPO=${{ env.ACTION_REPO || github.repository }}
+      echo "ref=$REF" >>"$GITHUB_OUTPUT"
+      echo "repo=$REPO" >>"$GITHUB_OUTPUT"
+    shell: bash
+    env:
+      ACTION_REF: ${{ github.action_ref }}
+      ACTION_REPO: ${{ github.action_repository }}
+  - name: Set Docker image name and tag
+    run: |
+      # Set Docker image name and tag
+      if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
+        IMAGE="../../../Dockerfile"
+      else
+        REF=${{ steps.set-repo-and-ref.outputs.ref }}
+        REPO=${{ steps.set-repo-and-ref.outputs.repo }}
+        IMAGE="docker://ghcr.io/$REPO:${REF/'/'/'-'}"
+      fi
+      FILE=".github/actions/run-docker-container/action.yml"
+      sed -i -e "s|{{image}}|$IMAGE|g" "$FILE"
+    shell: bash
+  - name: Run Docker container
+    uses: ./.github/actions/run-docker-container
+    with:
+      user: ${{ inputs.user }}
+      password: ${{ inputs.password }}
+      repository-url: ${{ inputs.repository-url || inputs.repository_url }}
+      packages-dir: ${{ inputs.packages-dir || inputs.packages_dir }}
+      verify-metadata: ${{ inputs.verify-metadata || inputs.verify_metadata }}
+      skip-existing: ${{ inputs.skip-existing || inputs.skip_existing }}
+      verbose: ${{ inputs.verbose }}
+      print-hash: ${{ inputs.print-hash || inputs.print_hash }}
