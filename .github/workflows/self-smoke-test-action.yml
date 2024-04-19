@@ -96,5 +96,15 @@ jobs:
         password: ${{ env.devpi-password }}
         repository-url: >-
           http://devpi:${{ env.devpi-port }}/${{ env.devpi-username }}/public/
-
+    - name: Smoke-test the marketplace action
+      uses: br3ndonland/gh-action-pypi-publish@1.8.15-alpha.5
+      env:
+        DEBUG: >-
+          true
+        PATH: utter-nonsense
+      with:
+        user: ${{ env.devpi-username }}
+        password: ${{ env.devpi-password }}
+        repository-url: >-
+          http://devpi:${{ env.devpi-port }}/${{ env.devpi-username }}/public/
 ...
