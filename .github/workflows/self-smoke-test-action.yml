@@ -5,7 +5,7 @@ name: 🧪
 on:   # yamllint disable-line rule:truthy
   # TODO: remove `pull_request` after merging to the default branch
   # `workflow_run` only works after it has been added to the default branch
-  pull_request:
+  # pull_request:
   workflow_run:
     workflows: [🏗️]
     types: [completed]
@@ -96,5 +96,15 @@ jobs:
         password: ${{ env.devpi-password }}
         repository-url: >-
           http://devpi:${{ env.devpi-port }}/${{ env.devpi-username }}/public/
-
+    - name: Smoke-test the marketplace action
+      uses: br3ndonland/gh-action-pypi-publish@1.8.15-alpha.5
+      env:
+        DEBUG: >-
+          true
+        PATH: utter-nonsense
+      with:
+        user: ${{ env.devpi-username }}
+        password: ${{ env.devpi-password }}
+        repository-url: >-
+          http://devpi:${{ env.devpi-port }}/${{ env.devpi-username }}/public/
 ...
