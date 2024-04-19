@@ -1,5 +1,5 @@
 ---
-name: pypi-publish-test
+name: pypi-publish-test  # this is a test
 description: Upload Python distribution packages to PyPI
 inputs:
   user:
