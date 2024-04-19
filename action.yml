@@ -119,7 +119,7 @@ runs:
       # build image from Dockerfile because it has not been pushed to GHCR,
       # else pull image from GHCR
       if [[ $GITHUB_EVENT_NAME == "pull_request" ]] &&
-        [[ $GITHUB_REPOSITORY == "br3ndonland/gh-action-pypi-publish" ]]; then
+        [[ $GITHUB_REPOSITORY == "pypa/gh-action-pypi-publish" ]]; then
         IMAGE="../../../Dockerfile"
       else
         REF=${{ steps.set-repo-and-ref.outputs.ref }}
