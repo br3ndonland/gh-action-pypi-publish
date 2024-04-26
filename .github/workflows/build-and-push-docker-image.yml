@@ -22,9 +22,12 @@ jobs:
           --build-arg BUILDKIT_INLINE_CACHE=1 \
           --cache-from $IMAGE \
           --tag $IMAGE
-    - name: Push Docker image to GHCR
+    - name: Log in to GHCR
       if: github.event_name != 'pull_request'
       run: |
         echo ${{ secrets.GITHUB_TOKEN }} |
           docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+    - name: Push Docker image to GHCR
+      if: github.event_name != 'pull_request'
+      run: |
         docker push $IMAGE
