@@ -98,36 +98,14 @@ runs:
         echo "\$PATH reset. \$PATH=$PATH"
       fi
     shell: bash
-  - name: Set repo and ref from which to run Docker container action
-    id: set-repo-and-ref
+  - name: Create Docker container action
     run: |
-      # Set repo and ref from which to run Docker container action
-      # to handle cases in which `github.action_` context is not set
-      # https://github.com/actions/runner/issues/2473
-      REF=${{ env.ACTION_REF || github.ref_name }}
-      REPO=${{ env.ACTION_REPO || github.repository }}
-      echo "ref=$REF" >>"$GITHUB_OUTPUT"
-      echo "repo=$REPO" >>"$GITHUB_OUTPUT"
-    shell: bash
+      python -m pip install -r requirements/github-actions.txt
+      python create-docker-action.py ${{ steps.set-image.outputs.image }}
     env:
-      ACTION_REF: ${{ github.action_ref }}
-      ACTION_REPO: ${{ github.action_repository }}
-  - name: Set Docker image name and tag
-    run: |
-      # Set Docker image name and tag
-      # if action run was triggered by a pull request to this repo,
-      # build image from Dockerfile because it has not been pushed to GHCR,
-      # else pull image from GHCR
-      if [[ $GITHUB_EVENT_NAME == "pull_request" ]] &&
-        [[ $GITHUB_REPOSITORY == "pypa/gh-action-pypi-publish" ]]; then
-        IMAGE="../../../Dockerfile"
-      else
-        REF=${{ steps.set-repo-and-ref.outputs.ref }}
-        REPO=${{ steps.set-repo-and-ref.outputs.repo }}
-        IMAGE="docker://ghcr.io/$REPO:${REF/'/'/'-'}"
-      fi
-      FILE=".github/actions/run-docker-container/action.yml"
-      sed -i -e "s|{{image}}|$IMAGE|g" "$FILE"
+      EVENT: ${{ github.event_name }}
+      REF: ${{ github.action_ref || github.ref_name }}
+      REPO: ${{ github.action_repository || github.repository }}
     shell: bash
   - name: Run Docker container
     uses: ./.github/actions/run-docker-container
