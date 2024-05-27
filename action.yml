@@ -119,25 +119,25 @@ runs:
     env:
       ACTION_REF: ${{ github.action_ref }}
       ACTION_REPO: ${{ github.action_repository }}
-  - name: Set Docker image name and tag
+  - name: Check out action repo
+    uses: actions/checkout@v4
+    with:
+      path: action-repo
+      ref: ${{ steps.set-repo-and-ref.outputs.ref }}
+      repository: ${{ steps.set-repo-and-ref.outputs.repo }}
+  - name: Create Docker container action
     run: |
-      # Set Docker image name and tag
-      # if action run was triggered by a pull request to this repo,
-      # build image from Dockerfile because it has not been pushed to GHCR,
-      # else pull image from GHCR
-      if [[ $GITHUB_EVENT_NAME == "pull_request" ]] &&
-        [[ $GITHUB_REPOSITORY == "pypa/gh-action-pypi-publish" ]]; then
-        IMAGE="../../../Dockerfile"
-      else
-        REF=${{ steps.set-repo-and-ref.outputs.ref }}
-        REPO=${{ steps.set-repo-and-ref.outputs.repo }}
-        IMAGE="docker://ghcr.io/$REPO:${REF/'/'/'-'}"
-      fi
-      FILE=".github/actions/run-docker-container/action.yml"
-      sed -i -e "s|{{image}}|$IMAGE|g" "$FILE"
+      # Create Docker container action
+      python -m pip install -r requirements/github-actions.txt
+      python create-docker-action.py ${{ steps.set-image.outputs.image }}
+    env:
+      EVENT: ${{ github.event_name }}
+      REF: ${{ steps.set-repo-and-ref.outputs.ref }}
+      REPO: ${{ steps.set-repo-and-ref.outputs.repo }}
     shell: bash
+    working-directory: action-repo
   - name: Run Docker container
-    uses: ./.github/actions/run-docker-container
+    uses: ./action-repo/.github/actions/run-docker-container
     with:
       user: ${{ inputs.user }}
       password: ${{ inputs.password }}
