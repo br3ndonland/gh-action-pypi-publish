@@ -31,7 +31,7 @@ repos:
     args:
     - --builtin-schema
     - github-workflows-require-timeout
-    files: ^\.github\/workflows/[^/]+$
+    files: ^\.github/workflows/[^/]+$
     types:
     - yaml
   - id: check-readthedocs
