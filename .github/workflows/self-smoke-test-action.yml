@@ -48,10 +48,12 @@ jobs:
     steps:
     - name: Check out the action locally
       uses: actions/checkout@v3
+      with:
+        path: test
     - name: Install the packaging-related tools
       run: python3 -m pip install build twine
       env:
-        PIP_CONSTRAINT: requirements/runtime.txt
+        PIP_CONSTRAINT: test/requirements/runtime.txt
     - name: Create the stub package importable directory
       run: mkdir -pv src/test_package
     - name: Populate the stub package `__init__.py`
@@ -86,7 +88,7 @@ jobs:
             env.devpi-username
           }}/public/
     - name: ✅ Smoke-test the locally checked out action
-      uses: ./
+      uses: ./test
       env:
         DEBUG: >-
           true
