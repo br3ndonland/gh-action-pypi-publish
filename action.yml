@@ -111,14 +111,16 @@ runs:
       # Set repo and ref from which to run Docker container action
       # to handle cases in which `github.action_` context is not set
       # https://github.com/actions/runner/issues/2473
-      REF=${{ env.ACTION_REF || github.ref_name }}
-      REPO=${{ env.ACTION_REPO || github.repository }}
+      REF=${{ env.ACTION_REF || env.PR_REF || github.ref_name }}
+      REPO=${{ env.ACTION_REPO || env.PR_REPO || github.repository }}
       echo "ref=$REF" >>"$GITHUB_OUTPUT"
       echo "repo=$REPO" >>"$GITHUB_OUTPUT"
     shell: bash
     env:
       ACTION_REF: ${{ github.action_ref }}
       ACTION_REPO: ${{ github.action_repository }}
+      PR_REF: ${{ github.event.pull_request.head.ref }}
+      PR_REPO: ${{ github.event.pull_request.head.repo.full_name }}
   - name: Check out action repo
     uses: actions/checkout@v4
     with:
