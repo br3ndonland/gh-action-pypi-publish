@@ -1,7 +1,6 @@
+import json
 import os
 import pathlib
-
-import yaml
 
 DESCRIPTION = 'description'
 REQUIRED = 'required'
@@ -83,6 +82,4 @@ action = {
 
 action_path = pathlib.Path('.github/actions/run-docker-container/action.yml')
 action_path.parent.mkdir(parents=True, exist_ok=True)
-
-with action_path.open(mode='w', encoding='utf-8') as file:
-    yaml.dump(action, file, allow_unicode=True, sort_keys=False)
+action_path.write_text(json.dumps(action, ensure_ascii=False), encoding='utf-8')
