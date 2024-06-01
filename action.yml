@@ -123,8 +123,7 @@ runs:
   - name: Create Docker container action
     run: |
       # Create Docker container action
-      python -m pip install -r requirements/github-actions.txt
-      python create-docker-action.py ${{ steps.set-image.outputs.image }}
+      python create-docker-action.py
     env:
       EVENT: ${{ github.event_name }}
       REF: ${{ steps.set-repo-and-ref.outputs.ref }}
