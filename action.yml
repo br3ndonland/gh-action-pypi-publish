@@ -113,14 +113,17 @@ runs:
       # https://github.com/actions/runner/issues/2473
       REF=${{ env.ACTION_REF || env.PR_REF || github.ref_name }}
       REPO=${{ env.ACTION_REPO || env.PR_REPO || github.repository }}
+      REPO_OWNER_ID=${{ env.PR_REPO_OWNER_ID || github.repository_owner_id }}
       echo "ref=$REF" >>"$GITHUB_OUTPUT"
       echo "repo=$REPO" >>"$GITHUB_OUTPUT"
+      echo "repo-owner-id=$REPO_OWNER_ID" >>"$GITHUB_OUTPUT"
     shell: bash
     env:
       ACTION_REF: ${{ github.action_ref }}
       ACTION_REPO: ${{ github.action_repository }}
       PR_REF: ${{ github.event.pull_request.head.ref }}
       PR_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+      PR_REPO_OWNER_ID: ${{ github.event.pull_request.base.repo.owner.id }}
   - name: Check out action repo
     uses: actions/checkout@v4
     with:
@@ -135,6 +138,7 @@ runs:
       EVENT: ${{ github.event_name }}
       REF: ${{ steps.set-repo-and-ref.outputs.ref }}
       REPO: ${{ steps.set-repo-and-ref.outputs.repo }}
+      REPO_OWNER_ID: ${{ steps.set-repo-and-ref.outputs.repo-owner-id }}
     shell: bash
     working-directory: action-repo
   - name: Run Docker container
