@@ -86,6 +86,12 @@ branding:
 runs:
   using: composite
   steps:
+  - name: Fail-fast in unsupported environments
+    if: runner.os != 'Linux'
+    run: |
+      >&2 echo This action is only able to run under GNU/Linux environments
+      exit 1
+    shell: bash -eEuo pipefail {0}
   - name: Reset path if needed
     run: |
       # Reset path if needed
