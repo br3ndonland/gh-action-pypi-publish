@@ -60,16 +60,6 @@ action = {
     'runs': {
         'using': 'docker',
         'image': image,
-        'args': [
-            '${{ inputs.user }}',
-            '${{ inputs.password }}',
-            '${{ inputs.repository-url }}',
-            '${{ inputs.packages-dir }}',
-            '${{ inputs.verify-metadata }}',
-            '${{ inputs.skip-existing }}',
-            '${{ inputs.verbose }}',
-            '${{ inputs.print-hash }}',
-        ],
     },
 }
 
