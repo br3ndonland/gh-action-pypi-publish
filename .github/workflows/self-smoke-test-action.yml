@@ -29,6 +29,34 @@ env:
     PYTEST_THEME_MODE
 
 jobs:
+  fail-fast:
+    if: >-
+      github.event_name == 'pull_request' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    timeout-minutes: 2
+
+    steps:
+    - name: Check out the action locally
+      uses: actions/checkout@v3
+      with:
+        path: test
+    - name: Fail-fast in unsupported environments
+      continue-on-error: true
+      id: fail-fast
+      uses: ./test
+    - name: Error if action did not fail-fast in unsupported environments
+      if: steps.fail-fast.outcome == 'success'
+      run: |
+        >&2 echo This action should fail-fast in unsupported environments.
+        exit 1
+
   smoke-test:
     if: >-
       github.event_name == 'pull_request' ||
