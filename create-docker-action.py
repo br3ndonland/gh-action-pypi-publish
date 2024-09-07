@@ -63,7 +63,7 @@ action = {
                 ' Only works with PyPI and TestPyPI via Trusted Publishing.'
             ),
             REQUIRED: False,
-        }
+        },
     },
     'runs': {
         'using': 'docker',
