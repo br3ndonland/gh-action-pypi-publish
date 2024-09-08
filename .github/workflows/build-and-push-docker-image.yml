@@ -49,3 +49,5 @@ jobs:
         docker push $IMAGE
         docker push $IMAGE_MAJOR
         docker push $IMAGE_MAJOR_MINOR
+  smoke-test:
+    uses: ./.github/workflows/reusable-smoke-test.yml
