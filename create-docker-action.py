@@ -13,7 +13,7 @@ REPO_ID_GH_ACTION = '178055147'
 
 
 def set_image(event: str, ref: str, repo: str, repo_id: str) -> str:
-    if event == 'pull_request' and repo_id == REPO_ID_GH_ACTION:
+    if repo_id == REPO_ID_GH_ACTION:
         return '../../../Dockerfile'
     docker_ref = ref.replace('/', '-')
     return f'docker://ghcr.io/{repo}:{docker_ref}'
