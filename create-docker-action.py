@@ -9,7 +9,7 @@ EVENT = os.environ['EVENT']
 REF = os.environ['REF']
 REPO = os.environ['REPO']
 REPO_ID = os.environ['REPO_ID']
-REPO_ID_GH_ACTION = '178055147'
+REPO_ID_GH_ACTION = '783928061'
 
 
 def set_image(event: str, ref: str, repo: str, repo_id: str) -> str:
