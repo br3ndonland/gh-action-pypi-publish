@@ -1,12 +1,9 @@
 ---
 
-name: 🧪
+name: ♻️ 🧪
 
 on:   # yamllint disable-line rule:truthy
-  pull_request:
-  workflow_run:
-    workflows: [🏗️]
-    types: [completed]
+  workflow_call:
 
 env:
   devpi-password: abcd1234
@@ -30,9 +27,6 @@ env:
 
 jobs:
   fail-fast:
-    if: >-
-      github.event_name == 'pull_request' ||
-      github.event.workflow_run.conclusion == 'success'
 
     strategy:
       matrix:
@@ -44,7 +38,7 @@ jobs:
 
     steps:
     - name: Check out the action locally
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         path: test
     - name: Fail-fast in unsupported environments
@@ -58,9 +52,7 @@ jobs:
         exit 1
 
   smoke-test:
-    if: >-
-      github.event_name == 'pull_request' ||
-      github.event.workflow_run.conclusion == 'success'
+
     runs-on: ubuntu-latest
 
     services:
