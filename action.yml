@@ -141,7 +141,6 @@ runs:
       # Create Docker container action
       python create-docker-action.py
     env:
-      EVENT: ${{ github.event_name }}
       REF: ${{ steps.set-repo-and-ref.outputs.ref }}
       REPO: ${{ steps.set-repo-and-ref.outputs.repo }}
       REPO_ID: ${{ steps.set-repo-and-ref.outputs.repo-id }}

@@ -5,21 +5,20 @@ import pathlib
 DESCRIPTION = 'description'
 REQUIRED = 'required'
 
-EVENT = os.environ['EVENT']
 REF = os.environ['REF']
 REPO = os.environ['REPO']
 REPO_ID = os.environ['REPO_ID']
 REPO_ID_GH_ACTION = '178055147'
 
 
-def set_image(event: str, ref: str, repo: str, repo_id: str) -> str:
-    if event == 'pull_request' and repo_id == REPO_ID_GH_ACTION:
+def set_image(ref: str, repo: str, repo_id: str) -> str:
+    if repo_id == REPO_ID_GH_ACTION:
         return '../../../Dockerfile'
     docker_ref = ref.replace('/', '-')
     return f'docker://ghcr.io/{repo}:{docker_ref}'
 
 
-image = set_image(EVENT, REF, REPO, REPO_ID)
+image = set_image(REF, REPO, REPO_ID)
 
 action = {
     'name': '🏃',
