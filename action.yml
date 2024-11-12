@@ -87,6 +87,20 @@ inputs:
       Only works with PyPI and TestPyPI via Trusted Publishing.
     required: false
     default: 'true'
+  action_repository:
+    description: >-
+      [EXPERIMENTAL]
+      Set action repository to work around bug in nested composite actions
+      https://github.com/actions/runner/issues/2473
+    required: false
+    default: ${{ github.action_repository }}
+  action_ref:
+    description: >-
+      [EXPERIMENTAL]
+      Set action ref to work around bug in nested composite actions
+      https://github.com/actions/runner/issues/2473
+    required: false
+    default: ${{ github.action_ref }}
 branding:
   color: yellow
   icon: upload-cloud
@@ -116,17 +130,19 @@ runs:
     run: |
       # Set repo and ref from which to run Docker container action
       # to handle cases in which `github.action_` context is not set
+      # or set properly for nested composite actions
       # https://github.com/actions/runner/issues/2473
       REF=${{ env.ACTION_REF || env.PR_REF || github.ref_name }}
       REPO=${{ env.ACTION_REPO || env.PR_REPO || github.repository }}
       REPO_ID=${{ env.PR_REPO_ID || github.repository_id }}
+      echo "action-path=$ACTION_PATH" >>"$GITHUB_OUTPUT"
       echo "ref=$REF" >>"$GITHUB_OUTPUT"
       echo "repo=$REPO" >>"$GITHUB_OUTPUT"
       echo "repo-id=$REPO_ID" >>"$GITHUB_OUTPUT"
     shell: bash
     env:
-      ACTION_REF: ${{ github.action_ref }}
-      ACTION_REPO: ${{ github.action_repository }}
+      ACTION_REF: ${{ inputs.action_ref }}
+      ACTION_REPO: ${{ inputs.action_repository }}
       PR_REF: ${{ github.event.pull_request.head.ref }}
       PR_REPO: ${{ github.event.pull_request.head.repo.full_name }}
       PR_REPO_ID: ${{ github.event.pull_request.base.repo.id }}
